@@ -7,8 +7,6 @@ jupyter_dash
 dash_table
 dash_bootstrap_components
 scikit-learn
-plotly.express
 base64
 joypy
 pathlib
-plotly.graph_objects
