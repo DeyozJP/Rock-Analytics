@@ -17,7 +17,7 @@ from dash.dependencies import Input, Output
 # from jupyter_dash import JupyterDash
 from dash import dash_table
 import plotly.express as px
-import seaborn as sns
+# import seaborn as sns
 import numpy as np
 import dash_bootstrap_components as dbc
 from dash import dcc, html, callback
