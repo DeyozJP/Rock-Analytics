@@ -14,11 +14,9 @@ import dash
 # import dash_html_components as html
 from dash import dcc, html
 from dash.dependencies import Input, Output
-from jupyter_dash import JupyterDash
+# from jupyter_dash import JupyterDash
 from dash import dash_table
-from dash.dash_table import DataTable, FormatTemplate
 import plotly.express as px
-from dash.dash_table.Format import Group
 import seaborn as sns
 import numpy as np
 import dash_bootstrap_components as dbc
@@ -339,8 +337,7 @@ def capture_click_data(clickData):
     
     
 
-# if __name__ == '__main__':
-#     app.run(debug = True, port = 8055, jupyter_mode = 'external')
+
 
 
 
