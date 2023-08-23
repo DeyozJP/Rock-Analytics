@@ -2,7 +2,6 @@ pandas
 gunicorn
 numpy
 dash==2.11.1
-bs4
 jupyter_dash
 dash_table
 dash_bootstrap_components
