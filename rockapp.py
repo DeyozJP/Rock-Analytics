@@ -6,6 +6,7 @@ import dash_bootstrap_components as dbc
 
 app = dash.Dash(__name__,suppress_callback_exceptions = True, use_pages = True,
                 external_stylesheets=[dbc.themes.SPACELAB])
+server = app.server
 sidebar = dbc.Nav([
     dbc.NavLink([
         html.Div(page['name'], className='ms-2', style = {"margin": "-10px 0px 0px -20px"}),
