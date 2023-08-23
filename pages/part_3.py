@@ -17,7 +17,9 @@ import plotly.graph_objects as go
 # In[2]:
 
 dash.register_page(__name__,  name='Analytics-2')
-dataframe = pd.read_csv('D://MSBA//Extra Projects//Data//New folder//rock.csv')
+PATH = pathlib.Path(__file__).parent
+DATA_PATH = PATH.joinpath("../datasets").resolve()
+dataframe = pd.read_csv(DATA_PATH.joinpath("rock.csv"))
 
 
 # #### Transform the variables to make their valies ranging from 0-1
