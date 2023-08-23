@@ -9,3 +9,4 @@ scikit-learn
 joypy
 pathlib
 fsspec
+matplotlib.pyplot
