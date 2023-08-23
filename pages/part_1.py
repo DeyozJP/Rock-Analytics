@@ -21,14 +21,13 @@ import numpy as np
 import dash_bootstrap_components as dbc
 from dash import dcc, html, callback
 from sklearn import preprocessing
-import wordcloud
-from wordcloud import WordCloud as wc, ImageColorGenerator
+
+
 import matplotlib.pyplot as plt
-# get_ipython().run_line_magic('matplotlib', 'inline')
+
 from PIL import Image
 from os import path, getcwd
-from nltk.corpus import stopwords
-import nltk
+
 import io
 import base64
 import pathlib
