@@ -7,6 +7,5 @@ jupyter_dash
 dash_table
 dash_bootstrap_components
 scikit-learn
-base64
 joypy
 pathlib
