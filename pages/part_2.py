@@ -139,7 +139,7 @@ def update_ridgeplot(checkbox):
         buf.seek(0)
 
         pic = base64.b64encode(buf.read()).decode('utf-8')
-        df_corr= round(dataframe.drop(['rock_era'], axis=1).corr(numeric_only = False, method = 'pearson'), 2)
+        df_corr= round(dataframe.drop(['rock_era'], axis=1).corr(method = 'pearson'), 2)
                                        # "name", 'artist', 'time_signature'], axis=1).corr(numeric_only = False, method = 'pearson'), 2)
                                        #
         heatmap = px.imshow(df_corr, text_auto = True, color_continuous_scale = 
