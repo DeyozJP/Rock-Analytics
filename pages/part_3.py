@@ -20,25 +20,25 @@ import pathlib
 dash.register_page(__name__,  name='Analytics-2')
 PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../datasets").resolve()
-dataframe = pd.read_csv(DATA_PATH.joinpath("rock.csv"))
+data = pd.read_csv(DATA_PATH.joinpath("dataframe.csv"))
 
 
 # #### Transform the variables to make their valies ranging from 0-1
 
-min_max_scaler = preprocessing.MinMaxScaler()
-
-columns = ['popularity', 'danceability', 'acousticness', 'energy', 'instrumentalness', 'key', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence', 'length']
-
-for  col in columns:
-    dataframe[col] = min_max_scaler.fit_transform(dataframe[col].values.reshape(-1, 1))
-
-dataframe = dataframe.drop(['danceability.1'], axis=1)
-
-dataframe1 = dataframe.copy(deep=True)
+# min_max_scaler = preprocessing.MinMaxScaler()
+#
+# columns = ['popularity', 'danceability', 'acousticness', 'energy', 'instrumentalness', 'key', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence', 'length']
+#
+# for  col in columns:
+#     dataframe[col] = min_max_scaler.fit_transform(dataframe[col].values.reshape(-1, 1))
+#
+# dataframe = dataframe.drop(['danceability.1'], axis=1)
+#
+# dataframe1 = dataframe.copy(deep=True)
 columns = ['popularity', 'danceability', 'acousticness', 'energy', 'instrumentalness', 'key', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence', 'length', 'time_signature']
-data = dataframe1.copy(deep=True)
+# data = dataframe1.copy(deep=True)
 
-data = data[columns]
+data1 = data[columns]
 
 # app = dash.Dash(__name__, external_stylesheets =[dbc.themes.PULSE],
 #                meta_tags = [{'name':'viewport',
@@ -149,14 +149,15 @@ layout = dbc.Container([
                                    'font-size': '12px', "margin": '2px 0px -20px 0px'}),
         html.Br(),
             
-        dcc.Checklist(id = 'checklist2', labelStyle={"display": 'inline-block', 'width': "35%",
+        dcc.Checklist(id = 'checklist2', labelStyle={"display": 'inline-block', 'width': "30%",
                                                      'align-items': 'center', 'margin': '-5px 0px -10px 5px'},
                           labelClassName ='mr-3, text-info',
                           value =['popularity', 'acousticness'],
                           options =[col for col in data.columns if col not in ['rock_era', 'pop_cat', 'time_signature',
                                                        'liveness', 'speechiness', 'loudness', 'tempo',
-                                                                               'key', 'length', 'valence']], style={"transform": 'scale(0.5)'}),
-        dcc.Graph(id="line_chart", style = {'margin': '-10px 0px -20px 0px'})
+                                                                               'key', 'length', 'valence','name', 'artist', 'release_date']],
+                      style={"transform": 'scale(0.6)', "margin":'0px 0px 0px -20px'}),
+        dcc.Graph(id="line_chart", style = {'margin': '-13px 0px 0px 0px'})
         ], xs=12, sm=12, md=6, lg=6, xl=6, xxl=6)
         
     ], justify='around'),
@@ -169,20 +170,18 @@ layout = dbc.Container([
     Output(component_id='time_signature_comparison', component_property="figure"),
     Input(component_id='most_popular_slider', component_property='value'),
     Input(component_id='least_popular_slider', component_property='value'))
-
-
 def barchart_1(most_popular_slider, least_popular_slider):
     if most_popular_slider is None and least_popular_slider is None:
         selection = "no selection"
     else:
-        global data
-        data1 = data.copy(deep=True)
+        global data1
+        data2 = data1.copy(deep=True)
 
-        data1['pop_cat'] = ['pop' if i >= 0.5 else 'unpop' for i in data1['popularity']]
+        data2['pop_cat'] = ['pop' if i >= 0.5 else 'unpop' for i in data2['popularity']]
         selection = most_popular_slider
-        dataframeA = data1[(data1['popularity'] >= selection[0]) & (data1['popularity'] <= selection[1])]
+        dataframeA = data2[(data2['popularity'] >= selection[0]) & (data2['popularity'] <= selection[1])]
         selection = least_popular_slider
-        dataframeB = data1[(data1['popularity'] >= selection[0]) & (data1['popularity'] <= selection[1])]
+        dataframeB = data2[(data1['popularity'] >= selection[0]) & (data2['popularity'] <= selection[1])]
         dataframe3 = pd.concat([dataframeA, dataframeB], ignore_index=True)
 
         dataframe4 = dataframe3.copy(deep=True)
@@ -220,13 +219,13 @@ def barchart_1(most_popular_slider, least_popular_slider):
 
 # for fig2
 
-        dataframe5 = data1.copy(deep=True)
+        dataframe5 = data.copy(deep=True)
         dataframe5['time_signature'] = [str(i) for i in dataframe5['time_signature']]
 
         #         dataframe5['time_signature'].astype('object')
         dataframe5 = dataframe5[(dataframe5['time_signature'] == '4') | (dataframe5['time_signature'] == '3')
                                 | (dataframe5['time_signature'] == '5')]
-        agg_col = [col for col in dataframe5.columns if col != 'time_signature']
+        agg_col = [col for col in dataframe5.columns if col not in ['time_signature', 'release_date']]
         # agg_col.append('popularity')
         df_ts = round(dataframe5.groupby(['time_signature'])[agg_col].mean(), 2).reset_index()
         df_ts = pd.melt(df_ts, id_vars=('time_signature'))
@@ -284,7 +283,7 @@ def line_chart(checklist2):
     
     if checklist2:
 #         global dataframe1
-        data_line = dataframe1.copy(deep=True)
+        data_line = data.copy(deep=True)
 #         column = data_line.columns
         columns = [col for col in checklist2]
         columns.append('release_date')
@@ -304,6 +303,4 @@ def line_chart(checklist2):
     
     
 
-# if __name__ == '__main__':
-#     app.run(debug = True)
 

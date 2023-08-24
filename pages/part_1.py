@@ -1,35 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[152]:
 
-
-import json
 import pandas as pd
 import dash
-# import dash_core_components as dcc
-# import dash_html_components as html
-from dash import dcc, html
 from dash.dependencies import Input, Output
-from jupyter_dash import JupyterDash
-from dash import dash_table
-# from dash.dash_table import DataTable, FormatTemplate
-import plotly.express as px
-# from dash.dash_table.Format import Group
-# import seaborn as sns
-import numpy as np
+from dash.dash_table import DataTable, FormatTemplate
 import dash_bootstrap_components as dbc
 from dash import dcc, html, callback
-from sklearn import preprocessing
-
-
-import matplotlib.pyplot as plt
-
-from PIL import Image
-from os import path, getcwd
-
-import io
-import base64
 import pathlib
 
 dash.register_page(__name__, name='Get your song')
@@ -37,46 +15,7 @@ dash.register_page(__name__, name='Get your song')
 #get relative data folder
 PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../datasets").resolve()
-dataframe = pd.read_csv(DATA_PATH.joinpath("rock.csv"))
-# dataframe = pd.read_csv('D://MSBA//Extra Projects//Data//New folder//rock.csv')
-
-# creating a categorical variable "rock_era"
-bins = [dataframe['release_date'].min() - 1, 1979, 1999, dataframe['release_date'].max()]
-labels = ['Old Rock', 'Sweet Rock', 'Modern Rock']
-dataframe['rock_era'] = pd.cut(dataframe['release_date'], bins, labels=labels)
-
-# Scaling the numerical columns
-
-min_max_scaler = preprocessing.MinMaxScaler()
-numerical_columns = dataframe.select_dtypes(include=['float', 'int']).columns.tolist()
-remove_columns = ['index', 'release_date', 'danceability.1', 'time_signature']
-numerical_columns = [col for col in numerical_columns if col not in remove_columns]
-for col in numerical_columns:
-    dataframe[col] = min_max_scaler.fit_transform(dataframe[col].values.reshape(-1, 1))
-
-
-#  rounding values of dataframe
-
-numerical_columns = dataframe.select_dtypes(include=[float]).columns.tolist()
-dataframe[numerical_columns] = dataframe[numerical_columns].applymap(lambda x: round(x, 2))
-
-
-dataframe = dataframe.drop(['danceability.1'], axis=1)
-
-
-# Instantiating App
-
-
-# app = dash.Dash(__name__, external_stylesheets=[dbc.themes.PULSE],
-#
-#                 meta_tags=[{'name': 'viewport',
-#                             'content': 'width=device-width, initial-scale = 0.9, maximum-scale = 1.9, minimum-scale = 0.5'}])
-
-# dataframe = pd.read_csv('D://MSBA//Extra Projects//Data//New folder//rock.csv')
-# bins = [dataframe['release_date'].min()-1, 1981, 2001, dataframe['release_date'].max()]
-# labels =['Old Rock', 'Sweet Rock', 'Modern Rock']
-# dataframe['rock_era'] = pd.cut(dataframe['release_date'], bins, labels = labels)
-
+data = pd.read_csv(DATA_PATH.joinpath("dataframe.csv"))
 
 layout = dbc.Container([
     dbc.Row([
@@ -110,7 +49,7 @@ layout = dbc.Container([
             html.H6('Select rock era',
                     style={'textAlign': 'left', "margin": "0px 0px 10px 29px", 'font-size': "15px"}),
             dcc.Dropdown(id='rock_era_id',
-                         options=[{"label": i, 'value': i} for i in dataframe['rock_era'].unique()],
+                         options=[{"label": i, 'value': i} for i in data['rock_era'].unique()],
                          value='Sweet Rock',
                          style={"margin": "0px 0px 10px 15px", "width": "130px", 'font-size': "13px"}
                          ),
@@ -139,8 +78,8 @@ layout = dbc.Container([
                     ),
             dcc.RangeSlider(
                 id='popularity_slider',
-                min=dataframe['popularity'].min(),
-                max=dataframe['popularity'].max(),
+                min=data['popularity'].min(),
+                max=data['popularity'].max(),
                 value=[0.6, 0.7],
                 step=0.1,
                 vertical=False,
@@ -153,8 +92,8 @@ layout = dbc.Container([
             ),
             dcc.RangeSlider(
                 id='danceability_slider',
-                min=dataframe['danceability'].min(),
-                max=dataframe['danceability'].max(),
+                min=data['danceability'].min(),
+                max=data['danceability'].max(),
                 value=[0.1, 0.4],
                 step=0.1,
                 vertical=False,
@@ -166,8 +105,8 @@ layout = dbc.Container([
                     ),
             dcc.RangeSlider(
                 id='acoustic_slider',
-                min=dataframe['acousticness'].min(),
-                max=dataframe['acousticness'].max(),
+                min=data['acousticness'].min(),
+                max=data['acousticness'].max(),
                 value=[0.4, 0.6],
                 step=0.1,
                 vertical=False,
@@ -180,8 +119,8 @@ layout = dbc.Container([
             ),
             dcc.RangeSlider(
                 id='liveness index',
-                min=dataframe['liveness'].min(),
-                max=dataframe['liveness'].max(),
+                min=data['liveness'].min(),
+                max=data['liveness'].max(),
                 value=[0.1, 0.3],
                 step=0.1,
                 vertical=False,
@@ -230,9 +169,9 @@ layout = dbc.Container([
 def get_table(option, popularity_slider, danceability_slider, acousticness_slider, liveness_slider):
     if (option) and (popularity_slider) and (danceability_slider) and (acousticness_slider) and (liveness_slider):
         selection = option
-        global dataframe
+        global data
 
-        dataframe = dataframe.copy(deep=True)
+        dataframe = data.copy(deep=True)
         dataframe1 = dataframe[
             ['name', 'artist', 'release_date', 'popularity', 'danceability', 'acousticness', 'liveness', 'rock_era']]
         dataframe2 = dataframe1[dataframe1['rock_era'] == selection].sort_values(by='popularity', ascending=False)
@@ -257,35 +196,7 @@ def get_table(option, popularity_slider, danceability_slider, acousticness_slide
                             page_current=0,
                             page_size=8,
                             style_cell={"textAlign": 'left'})
-
-        #         dataframe_wc = dataframe1['artist']=='option'
-        #         text = ' '.join([artist for artist in dataframe_wc])
-        #         mask_image_path ="D://MSBA//extra//rocka.png"
-        #         mask_image = np.array(Image.open(mask_image_path))
-        #         wordcloud = wc(mask = mask_image, background_color ='black', min_font_size = 10,
-        #                collocations = True, colormap ='BuPu',
-        #                max_words =150).generate(text)
-        #         output_image_path = "D://MSBA//extra//rockb.png"
-        #         wordcloud.to_file(output_image_path)
-
-        #         plt.figure(figsize=(8,7))
-        #         plt.imshow(wordcloud, interpolation = 'bilinear')
-        #         plt.axis ('off')
-        #         plt.title ("Tob Rock Artist")
-        #         plt.savefig("rock3.png", format="png")
-        #         plt.show()
-        #         buf = io.BytesIO()
-        #         plt.savefig(buf, format = "png")
-        #         plt.close(fig)
-        #         buf.seek(0)
-
-        #         pic = base64.b64encode(buf.read()).decode('utf-8')
-
         return df_dash,
 
 
 
-# if __name__ == '__main__':
-#     app.run(debug=True, port=8053, jupyter_mode='external')
-
-#
